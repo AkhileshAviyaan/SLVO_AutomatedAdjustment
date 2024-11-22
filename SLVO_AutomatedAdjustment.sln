@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLVO_AutomatedAdjustment", "SLVO_AutomatedAdjustment\SLVO_AutomatedAdjustment.csproj", "{7C76F89C-8DCB-40E9-B218-C1A141556B21}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7C76F89C-8DCB-40E9-B218-C1A141556B21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C76F89C-8DCB-40E9-B218-C1A141556B21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C76F89C-8DCB-40E9-B218-C1A141556B21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C76F89C-8DCB-40E9-B218-C1A141556B21}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6E1CCDBB-F853-41C7-B26C-4B17508D108A}
+	EndGlobalSection
+EndGlobal
