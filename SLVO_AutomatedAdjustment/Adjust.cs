@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.ConstrainedExecution;
 using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Threading.Tasks;
@@ -178,11 +180,12 @@ internal class Adjust
 		Check();
 		SaveWorkBook();
 	}
-
+	IXLRows rowsCheck;
+	IXLRows rowsRaw;
 	void SaveToMemoryForProcess()
 	{
-		var rowsCheck = checkSheet.RowsUsed();
-		var rowsRaw = rawSheet.RowsUsed();
+		rowsCheck = checkSheet.RowsUsed();
+		rowsRaw = rawSheet.RowsUsed();
 
 		DataNoCheck = rowsCheck.Count();
 		DataNoRow = rowsRaw.Count();
@@ -269,12 +272,13 @@ internal class Adjust
 			if (cRow == firstRowNo)
 			{
 				var csrBelow = checkSelectedRows.Where(n => n.RowNo == cRow + 1).FirstOrDefault();
-					var diffBelow = csrBelow.Diff[cCol];
+				var diffBelow = csrBelow.Diff[cCol];
 				if (diffBelow <= 0)
 				{
 					for (int j = 0; j < Math.Abs(diff); j++)
 					{
 						DeleteCell(rawsFiltedByTime[j]);
+						csr.Diff[cCol] ++;
 					}
 				}
 				else
@@ -285,23 +289,26 @@ internal class Adjust
 						int endIndex = startIndex + diff;
 						for (int j = startIndex; j > endIndex; j--)
 						{
-							ModifyCell(rawsFiltedByTime[j], j,"UP");
+							ModifyCell(rawsFiltedByTime[j], j, "UP");
+							csrBelow.Diff[cCol]--;
 						}
 					}
 					else
 					{
 						var remDiff = Math.Abs(diff) - diffBelow;
 						int startIndex = FilteredCount - 1;
-						int endIndex = startIndex -remDiff;
+						int endIndex = startIndex - remDiff;
 						for (int j = startIndex; j > endIndex; j--)
 						{
 							DeleteCell(rawsFiltedByTime[j]);
+							csr.Diff[cCol]++;
 						}
 						startIndex = startIndex - remDiff;
-						endIndex = startIndex -diffBelow;
+						endIndex = startIndex - diffBelow;
 						for (int j = startIndex; j > endIndex; j--)
 						{
 							ModifyCell(rawsFiltedByTime[j], j, "UP");
+							csrBelow.Diff[cCol]--;
 						}
 					}
 				}
@@ -312,9 +319,10 @@ internal class Adjust
 				var diffAbove = csrAbove.Diff[cCol];
 				if (diffAbove <= 0)
 				{
-					for (int j = FilteredCount-1; j > Math.Abs(diff); j--)
+					for (int j = FilteredCount - 1; j > Math.Abs(diff); j--)
 					{
 						DeleteCell(rawsFiltedByTime[j]);
+						csr.Diff[cCol]++;
 					}
 				}
 				else
@@ -325,6 +333,7 @@ internal class Adjust
 						for (int j = 0; j < endIndex; j++)
 						{
 							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
+							csrAbove.Diff[cCol]--;
 						}
 					}
 					else
@@ -333,10 +342,12 @@ internal class Adjust
 						for (int j = 0; j < diffAbove; j++)
 						{
 							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
+							csrAbove.Diff[cCol]--;
 						}
 						for (int j = diffAbove; j < Math.Abs(diff); j++)
 						{
 							DeleteCell(rawsFiltedByTime[j]);
+							csr.Diff[cCol]++;
 						}
 					}
 				}
@@ -347,18 +358,20 @@ internal class Adjust
 				var csrBelow = checkSelectedRows.Where(n => n.RowNo == cRow + 1).FirstOrDefault();
 				var diffAbove = csrAbove.Diff[cCol];
 				var diffBelow = csrBelow.Diff[cCol];
-				if (diffAbove <= 0 & diffBelow<=0)
+				if (diffAbove <= 0 & diffBelow <= 0)
 				{
 					if (FilteredCount == Math.Abs(diff))
 					{
 						for (int j = FilteredCount - 1; j >= 0; j--)
 						{
 							DeleteCell(rawsFiltedByTime[j]);
+							csr.Diff[cCol]++;
 						}
 					}
 					for (int j = FilteredCount - 1; j > Math.Abs(diff); j--)
 					{
 						DeleteCell(rawsFiltedByTime[j]);
+						csr.Diff[cCol]++;
 					}
 				}
 				else
@@ -369,6 +382,7 @@ internal class Adjust
 						for (int j = 0; j < endIndex; j++)
 						{
 							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
+							csrAbove.Diff[cCol]--;
 						}
 					}
 					else
@@ -377,14 +391,16 @@ internal class Adjust
 						for (int j = 0; j < diffAbove; j++)
 						{
 							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
+							csrAbove.Diff[cCol]--;
 						}
 						diff = -remDiff;
-					
+
 						if (diffBelow <= 0)
 						{
 							for (int j = 0; j < Math.Abs(diff); j++)
 							{
 								DeleteCell(rawsFiltedByTime[j]);
+								csr.Diff[cCol]++;
 							}
 						}
 						else
@@ -396,6 +412,7 @@ internal class Adjust
 								for (int j = startIndex; j > endIndex; j--)
 								{
 									ModifyCell(rawsFiltedByTime[j], j, "UP");
+									csrBelow.Diff[cCol]--;
 								}
 							}
 							else
@@ -406,12 +423,17 @@ internal class Adjust
 								for (int j = startIndex; j > endIndex; j--)
 								{
 									DeleteCell(rawsFiltedByTime[j]);
+									csr.Diff[cCol]++;
 								}
 								startIndex = startIndex - remDiff1;
 								endIndex = startIndex - diffBelow;
-								for (int j = startIndex; j > endIndex; j--)
+								if(startIndex > 0)
 								{
-									ModifyCell(rawsFiltedByTime[j], j, "UP");
+									for (int j = startIndex; j > endIndex; j--)
+									{
+										ModifyCell(rawsFiltedByTime[j], j, "UP");
+										csrBelow.Diff[cCol]--;
+									}
 								}
 							}
 						}
