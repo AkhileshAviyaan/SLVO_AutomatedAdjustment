@@ -22,141 +22,141 @@ internal class Adjust
 	{
 		this.workbook.SaveAs(this.Path);
 	}
-	List<RawSelectedRows> rawCarAndTaxi
-	{
-		get
-		{
-			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("CAR")).OrderBy(n => n.RowNo).ToList();
-			if (filter != null)
-			{
-				return filter;
-			}
-			else
-			{
-				return new List<RawSelectedRows>();
-			}
-		}
-	}
-	List<RawSelectedRows> rawTempo
-	{
-		get
-		{
-			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("LARGE TEMPO") || n.VehicleType.Trim().ToUpper().StartsWith("ELECTRIC TEMPO")).OrderBy(n => n.RowNo).ToList();
-			if (filter != null)
-			{
-				return filter;
-			}
-			else
-			{
-				return new List<RawSelectedRows>();
-			}
-		}
-	}
-	List<RawSelectedRows> rawUtilityPickUp
-	{
-		get
-		{
-			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("UTILITY")).OrderBy(n => n.RowNo).ToList();
-			if (filter != null)
-			{
-				return filter;
-			}
-			else
-			{
-				return new List<RawSelectedRows>();
-			}
-		}
-	}
-	List<RawSelectedRows> rawMicroBus
-	{
-		get
-		{
-			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("MICRO")).OrderBy(n => n.RowNo).ToList();
-			if (filter != null)
-			{
-				return filter;
-			}
-			else
-			{
-				return new List<RawSelectedRows>();
-			}
-		}
-	}
-	List<RawSelectedRows> rawMiniBus
-	{
-		get
-		{
-			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("MINU") || n.VehicleType.Trim().ToUpper().StartsWith("MINIBUS") || n.VehicleType.Trim().ToUpper().StartsWith("BUS ELECTRIC")).OrderBy(n => n.RowNo).ToList();
-			if (filter != null)
-			{
-				return filter;
-			}
-			else
-			{
-				return new List<RawSelectedRows>();
-			}
-		}
-	}
-	List<RawSelectedRows> rawBigBus
-	{
-		get
-		{
-			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("BIG BUS")).OrderBy(n => n.RowNo).ToList();
-			if (filter != null)
-			{
-				return filter;
-			}
-			else
-			{
-				return new List<RawSelectedRows>();
-			}
-		}
-	}
-	List<RawSelectedRows> rawLightTruck
-	{
-		get
-		{
-			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("LIGHT TRUCK")).OrderBy(n => n.RowNo).ToList();
-			if (filter != null)
-			{
-				return filter;
-			}
-			else
-			{
-				return new List<RawSelectedRows>();
-			}
-		}
-	}
-	List<RawSelectedRows> rawHeavyTruck
-	{
-		get
-		{
-			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("HEAVY TRUCK")).OrderBy(n => n.RowNo).ToList();
-			if (filter != null)
-			{
-				return filter;
-			}
-			else
-			{
-				return new List<RawSelectedRows>();
-			}
-		}
-	}
-	List<RawSelectedRows> rawMultiAxleTruck
-	{
-		get
-		{
-			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("MULTI")).OrderBy(n => n.RowNo).ToList();
-			if (filter != null)
-			{
-				return filter;
-			}
-			else
-			{
-				return new List<RawSelectedRows>();
-			}
-		}
-	}
+	//List<RawSelectedRows> rawCarAndTaxi
+	//{
+	//	get
+	//	{
+	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("CAR")).OrderBy(n => n.RowNo).ToList();
+	//		if (filter != null)
+	//		{
+	//			return filter;
+	//		}
+	//		else
+	//		{
+	//			return new List<RawSelectedRows>();
+	//		}
+	//	}
+	//}
+	//List<RawSelectedRows> rawTempo
+	//{
+	//	get
+	//	{
+	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("LARGE TEMPO") || n.VehicleType.Trim().ToUpper().StartsWith("ELECTRIC TEMPO")).OrderBy(n => n.RowNo).ToList();
+	//		if (filter != null)
+	//		{
+	//			return filter;
+	//		}
+	//		else
+	//		{
+	//			return new List<RawSelectedRows>();
+	//		}
+	//	}
+	//}
+	//List<RawSelectedRows> rawUtilityPickUp
+	//{
+	//	get
+	//	{
+	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("UTILITY")).OrderBy(n => n.RowNo).ToList();
+	//		if (filter != null)
+	//		{
+	//			return filter;
+	//		}
+	//		else
+	//		{
+	//			return new List<RawSelectedRows>();
+	//		}
+	//	}
+	//}
+	//List<RawSelectedRows> rawMicroBus
+	//{
+	//	get
+	//	{
+	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("MICRO")).OrderBy(n => n.RowNo).ToList();
+	//		if (filter != null)
+	//		{
+	//			return filter;
+	//		}
+	//		else
+	//		{
+	//			return new List<RawSelectedRows>();
+	//		}
+	//	}
+	//}
+	//List<RawSelectedRows> rawMiniBus
+	//{
+	//	get
+	//	{
+	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("MINU") || n.VehicleType.Trim().ToUpper().StartsWith("MINIBUS") || n.VehicleType.Trim().ToUpper().StartsWith("BUS ELECTRIC")).OrderBy(n => n.RowNo).ToList();
+	//		if (filter != null)
+	//		{
+	//			return filter;
+	//		}
+	//		else
+	//		{
+	//			return new List<RawSelectedRows>();
+	//		}
+	//	}
+	//}
+	//List<RawSelectedRows> rawBigBus
+	//{
+	//	get
+	//	{
+	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("BIG BUS")).OrderBy(n => n.RowNo).ToList();
+	//		if (filter != null)
+	//		{
+	//			return filter;
+	//		}
+	//		else
+	//		{
+	//			return new List<RawSelectedRows>();
+	//		}
+	//	}
+	//}
+	//List<RawSelectedRows> rawLightTruck
+	//{
+	//	get
+	//	{
+	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("LIGHT TRUCK")).OrderBy(n => n.RowNo).ToList();
+	//		if (filter != null)
+	//		{
+	//			return filter;
+	//		}
+	//		else
+	//		{
+	//			return new List<RawSelectedRows>();
+	//		}
+	//	}
+	//}
+	//List<RawSelectedRows> rawHeavyTruck
+	//{
+	//	get
+	//	{
+	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("HEAVY TRUCK")).OrderBy(n => n.RowNo).ToList();
+	//		if (filter != null)
+	//		{
+	//			return filter;
+	//		}
+	//		else
+	//		{
+	//			return new List<RawSelectedRows>();
+	//		}
+	//	}
+	//}
+	//List<RawSelectedRows> rawMultiAxleTruck
+	//{
+	//	get
+	//	{
+	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("MULTI")).OrderBy(n => n.RowNo).ToList();
+	//		if (filter != null)
+	//		{
+	//			return filter;
+	//		}
+	//		else
+	//		{
+	//			return new List<RawSelectedRows>();
+	//		}
+	//	}
+	//}
 	List<CheckSelectedRows> checkSelectedRows { get; set; } = new List<CheckSelectedRows>();
 	List<CheckCell> checkCells { get; set; } = new List<CheckCell>();
 
@@ -221,24 +221,35 @@ internal class Adjust
 	}
 	int GetDiff(int t, int v, IXLRow row)
 	{
-		int t1 = row.Cell(t).GetValue<int>();
-		int v1 = row.Cell(v).GetValue<int>();
-		var diff = t1 - v1;
-		if (diff < 0)
+		try
 		{
-			var c = new CheckCell();
-			c.RowNo = row.RowNumber();
-			c.ColNo = t;
-			checkCells.Add(c);
+			double t1 = row.Cell(t).GetDouble();
+			double v1 = row.Cell(v).GetDouble();
+			double diff = t1 - v1;
+
+			if (diff < 0)
+			{
+				var c = new CheckCell
+				{
+					RowNo = row.RowNumber(),
+					ColNo = t
+				};
+				checkCells.Add(c);
+			}
+
+			return (int)diff; // Truncates to int; confirm this is intended.
 		}
-		else
+		catch (Exception ex)
 		{
+			// Handle potential exceptions, e.g., invalid cell values or parsing errors.
+			Console.WriteLine($"Error processing row {row.RowNumber()}: {ex.Message}");
+			return 0; // Default return value in case of error.
 		}
-		return t1 - v1;
 	}
+
 	void Check()
 	{
-		rawDict = new Dictionary<int, List<RawSelectedRows>>() { { 9, rawCarAndTaxi }, { 12, rawTempo }, { 15, rawUtilityPickUp }, { 18, rawMicroBus }, { 21, rawMiniBus }, { 24, rawBigBus }, { 27, rawLightTruck }, { 30, rawHeavyTruck }, { 33, rawMultiAxleTruck } };
+		//rawDict = new Dictionary<int, List<RawSelectedRows>>() { { 9, rawCarAndTaxi }, { 12, rawTempo }, { 15, rawUtilityPickUp }, { 18, rawMicroBus }, { 21, rawMiniBus }, { 24, rawBigBus }, { 27, rawLightTruck }, { 30, rawHeavyTruck }, { 33, rawMultiAxleTruck } };
 		for (int i = 0; i < checkCells.Count; i++)
 		{
 			var cellToCheck = checkCells[i];
