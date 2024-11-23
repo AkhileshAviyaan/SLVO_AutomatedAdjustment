@@ -22,141 +22,141 @@ internal class Adjust
 	{
 		this.workbook.SaveAs(this.Path);
 	}
-	//List<RawSelectedRows> rawCarAndTaxi
-	//{
-	//	get
-	//	{
-	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("CAR")).OrderBy(n => n.RowNo).ToList();
-	//		if (filter != null)
-	//		{
-	//			return filter;
-	//		}
-	//		else
-	//		{
-	//			return new List<RawSelectedRows>();
-	//		}
-	//	}
-	//}
-	//List<RawSelectedRows> rawTempo
-	//{
-	//	get
-	//	{
-	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("LARGE TEMPO") || n.VehicleType.Trim().ToUpper().StartsWith("ELECTRIC TEMPO")).OrderBy(n => n.RowNo).ToList();
-	//		if (filter != null)
-	//		{
-	//			return filter;
-	//		}
-	//		else
-	//		{
-	//			return new List<RawSelectedRows>();
-	//		}
-	//	}
-	//}
-	//List<RawSelectedRows> rawUtilityPickUp
-	//{
-	//	get
-	//	{
-	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("UTILITY")).OrderBy(n => n.RowNo).ToList();
-	//		if (filter != null)
-	//		{
-	//			return filter;
-	//		}
-	//		else
-	//		{
-	//			return new List<RawSelectedRows>();
-	//		}
-	//	}
-	//}
-	//List<RawSelectedRows> rawMicroBus
-	//{
-	//	get
-	//	{
-	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("MICRO")).OrderBy(n => n.RowNo).ToList();
-	//		if (filter != null)
-	//		{
-	//			return filter;
-	//		}
-	//		else
-	//		{
-	//			return new List<RawSelectedRows>();
-	//		}
-	//	}
-	//}
-	//List<RawSelectedRows> rawMiniBus
-	//{
-	//	get
-	//	{
-	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("MINU") || n.VehicleType.Trim().ToUpper().StartsWith("MINIBUS") || n.VehicleType.Trim().ToUpper().StartsWith("BUS ELECTRIC")).OrderBy(n => n.RowNo).ToList();
-	//		if (filter != null)
-	//		{
-	//			return filter;
-	//		}
-	//		else
-	//		{
-	//			return new List<RawSelectedRows>();
-	//		}
-	//	}
-	//}
-	//List<RawSelectedRows> rawBigBus
-	//{
-	//	get
-	//	{
-	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("BIG BUS")).OrderBy(n => n.RowNo).ToList();
-	//		if (filter != null)
-	//		{
-	//			return filter;
-	//		}
-	//		else
-	//		{
-	//			return new List<RawSelectedRows>();
-	//		}
-	//	}
-	//}
-	//List<RawSelectedRows> rawLightTruck
-	//{
-	//	get
-	//	{
-	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("LIGHT TRUCK")).OrderBy(n => n.RowNo).ToList();
-	//		if (filter != null)
-	//		{
-	//			return filter;
-	//		}
-	//		else
-	//		{
-	//			return new List<RawSelectedRows>();
-	//		}
-	//	}
-	//}
-	//List<RawSelectedRows> rawHeavyTruck
-	//{
-	//	get
-	//	{
-	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("HEAVY TRUCK")).OrderBy(n => n.RowNo).ToList();
-	//		if (filter != null)
-	//		{
-	//			return filter;
-	//		}
-	//		else
-	//		{
-	//			return new List<RawSelectedRows>();
-	//		}
-	//	}
-	//}
-	//List<RawSelectedRows> rawMultiAxleTruck
-	//{
-	//	get
-	//	{
-	//		var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("MULTI")).OrderBy(n => n.RowNo).ToList();
-	//		if (filter != null)
-	//		{
-	//			return filter;
-	//		}
-	//		else
-	//		{
-	//			return new List<RawSelectedRows>();
-	//		}
-	//	}
-	//}
+	List<RawSelectedRows> rawCarAndTaxi
+	{
+		get
+		{
+			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("CAR")).OrderBy(n => n.RowNo).ToList();
+			if (filter != null)
+			{
+				return filter;
+			}
+			else
+			{
+				return new List<RawSelectedRows>();
+			}
+		}
+	}
+	List<RawSelectedRows> rawTempo
+	{
+		get
+		{
+			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("LARGE TEMPO") || n.VehicleType.Trim().ToUpper().StartsWith("ELECTRIC TEMPO")).OrderBy(n => n.RowNo).ToList();
+			if (filter != null)
+			{
+				return filter;
+			}
+			else
+			{
+				return new List<RawSelectedRows>();
+			}
+		}
+	}
+	List<RawSelectedRows> rawUtilityPickUp
+	{
+		get
+		{
+			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("UTILITY")).OrderBy(n => n.RowNo).ToList();
+			if (filter != null)
+			{
+				return filter;
+			}
+			else
+			{
+				return new List<RawSelectedRows>();
+			}
+		}
+	}
+	List<RawSelectedRows> rawMicroBus
+	{
+		get
+		{
+			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("MICRO")).OrderBy(n => n.RowNo).ToList();
+			if (filter != null)
+			{
+				return filter;
+			}
+			else
+			{
+				return new List<RawSelectedRows>();
+			}
+		}
+	}
+	List<RawSelectedRows> rawMiniBus
+	{
+		get
+		{
+			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("MINU") || n.VehicleType.Trim().ToUpper().StartsWith("MINIBUS") || n.VehicleType.Trim().ToUpper().StartsWith("BUS ELECTRIC")).OrderBy(n => n.RowNo).ToList();
+			if (filter != null)
+			{
+				return filter;
+			}
+			else
+			{
+				return new List<RawSelectedRows>();
+			}
+		}
+	}
+	List<RawSelectedRows> rawBigBus
+	{
+		get
+		{
+			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("BIG BUS")).OrderBy(n => n.RowNo).ToList();
+			if (filter != null)
+			{
+				return filter;
+			}
+			else
+			{
+				return new List<RawSelectedRows>();
+			}
+		}
+	}
+	List<RawSelectedRows> rawLightTruck
+	{
+		get
+		{
+			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("LIGHT TRUCK")).OrderBy(n => n.RowNo).ToList();
+			if (filter != null)
+			{
+				return filter;
+			}
+			else
+			{
+				return new List<RawSelectedRows>();
+			}
+		}
+	}
+	List<RawSelectedRows> rawHeavyTruck
+	{
+		get
+		{
+			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("HEAVY TRUCK")).OrderBy(n => n.RowNo).ToList();
+			if (filter != null)
+			{
+				return filter;
+			}
+			else
+			{
+				return new List<RawSelectedRows>();
+			}
+		}
+	}
+	List<RawSelectedRows> rawMultiAxleTruck
+	{
+		get
+		{
+			var filter = rawSelectedRows.Where(n => n.VehicleType.Trim().ToUpper().StartsWith("MULTI")).OrderBy(n => n.RowNo).ToList();
+			if (filter != null)
+			{
+				return filter;
+			}
+			else
+			{
+				return new List<RawSelectedRows>();
+			}
+		}
+	}
 	List<CheckSelectedRows> checkSelectedRows { get; set; } = new List<CheckSelectedRows>();
 	List<CheckCell> checkCells { get; set; } = new List<CheckCell>();
 
@@ -181,10 +181,8 @@ internal class Adjust
 
 	void SaveToMemoryForProcess()
 	{
-		var rowsCheck = checkSheet.RowsUsed().ToList();
-		var rowsRaw = rawSheet.RowsUsed().ToList();
-		rowsCheck.RemoveRange(0, 3);
-		rowsRaw.RemoveRange(0, 1);
+		var rowsCheck = checkSheet.RowsUsed();
+		var rowsRaw = rawSheet.RowsUsed();
 
 		DataNoCheck = rowsCheck.Count();
 		DataNoRow = rowsRaw.Count();
@@ -193,17 +191,20 @@ internal class Adjust
 		{
 			CheckSelectedRows csr = new CheckSelectedRows();
 			csr.RowNo = row.RowNumber();
-			csr.ShortTime = row.Cell(3).GetString();
-			csr.Diff[9] = GetDiff(9, 8, row);
-			csr.Diff[12] = GetDiff(12, 11, row);
-			csr.Diff[15] = GetDiff(15, 14, row);
-			csr.Diff[18] = GetDiff(18, 17, row);
-			csr.Diff[21] = GetDiff(21, 20, row);
-			csr.Diff[24] = GetDiff(24, 23, row);
-			csr.Diff[27] = GetDiff(27, 26, row);
-			csr.Diff[30] = GetDiff(30, 29, row);
-			csr.Diff[33] = GetDiff(33, 32, row);
-			checkSelectedRows.Add(csr);
+			if (csr.RowNo > 4)
+			{
+				csr.ShortTime = row.Cell(3).GetString();
+				csr.Diff[9] = GetDiff(9, 8, row);
+				csr.Diff[12] = GetDiff(12, 11, row);
+				csr.Diff[15] = GetDiff(15, 14, row);
+				csr.Diff[18] = GetDiff(18, 17, row);
+				csr.Diff[21] = GetDiff(21, 20, row);
+				csr.Diff[24] = GetDiff(24, 23, row);
+				csr.Diff[27] = GetDiff(27, 26, row);
+				csr.Diff[30] = GetDiff(30, 29, row);
+				csr.Diff[33] = GetDiff(33, 32, row);
+				checkSelectedRows.Add(csr);
+			}
 		}
 		foreach (var row in rowsRaw)
 		{
@@ -249,7 +250,7 @@ internal class Adjust
 
 	void Check()
 	{
-		//rawDict = new Dictionary<int, List<RawSelectedRows>>() { { 9, rawCarAndTaxi }, { 12, rawTempo }, { 15, rawUtilityPickUp }, { 18, rawMicroBus }, { 21, rawMiniBus }, { 24, rawBigBus }, { 27, rawLightTruck }, { 30, rawHeavyTruck }, { 33, rawMultiAxleTruck } };
+		rawDict = new Dictionary<int, List<RawSelectedRows>>() { { 9, rawCarAndTaxi }, { 12, rawTempo }, { 15, rawUtilityPickUp }, { 18, rawMicroBus }, { 21, rawMiniBus }, { 24, rawBigBus }, { 27, rawLightTruck }, { 30, rawHeavyTruck }, { 33, rawMultiAxleTruck } };
 		for (int i = 0; i < checkCells.Count; i++)
 		{
 			var cellToCheck = checkCells[i];
@@ -346,8 +347,15 @@ internal class Adjust
 				var csrBelow = checkSelectedRows.Where(n => n.RowNo == cRow + 1).FirstOrDefault();
 				var diffAbove = csrAbove.Diff[cCol];
 				var diffBelow = csrBelow.Diff[cCol];
-				if (diffAbove <= 0)
+				if (diffAbove <= 0 & diffBelow<=0)
 				{
+					if (FilteredCount == Math.Abs(diff))
+					{
+						for (int j = FilteredCount - 1; j >= 0; j--)
+						{
+							DeleteCell(rawsFiltedByTime[j]);
+						}
+					}
 					for (int j = FilteredCount - 1; j > Math.Abs(diff); j--)
 					{
 						DeleteCell(rawsFiltedByTime[j]);
@@ -475,17 +483,35 @@ internal class Adjust
 		public Time Up(int j)
 		{
 			int remainder = Min % 15;
-			if (remainder != 0)
+
+
+			if (remainder == 0 & Min == 45)
+			{
+				Min = 1;
+				Hr++;
+			}
+			else if (remainder == 0 & Min == 30)
+			{
+				Min += 15;
+			}
+			else if (remainder == 0 & Min == 15)
+			{
+				Min += 15;
+			}
+			else if (remainder == 0 & Min == 0)
+			{
+				Min += 15;
+			}
+			else if (remainder != 0)
 			{
 				Min += (15 - remainder);
 			}
-
-			// Handle overflow if Min becomes 60
 			if (Min == 60)
 			{
-				Min = 0;
-				Hr = (Hr + 1) % 24; // Ensure Hr stays within 24-hour format
+				Min = 1;
+				Hr = (Hr + 1) % 24;
 			}
+
 			Random rdm = new Random();
 			Sec = 5+j*2+ rdm.Next(0, 11); // Reset seconds
 			return this;
@@ -495,15 +521,32 @@ internal class Adjust
 		{
 			// Convert minutes to the previous 15-minute multiple
 			int remainder = Min % 15;
-			if (remainder != 0)
+			if (remainder == 0 & Min == 45)
+			{
+				Min -= 15;
+			}
+			else if (remainder == 0 & Min == 30) 
+			{
+				Min -= 15;
+			}
+			else if( remainder==0 & Min == 15) 
+			{
+				Min -= 15;
+			}
+			else if (remainder == 0 & Min == 0)
+			{
+				Min = 59;
+				Hr = (Hr - 1) % 24;
+			}
+			else if(remainder !=0 & remainder < 15)
 			{
 				Min -= remainder;
 				Min--;
 			}
-			if (Min == 0)
+			else if (remainder !=0)
 			{
-				Min = 59;
-				Hr = (Hr - 1) % 24;
+				Min -= remainder;
+				Min--;
 			}
 			Random rdm = new Random();
 			Sec = 5+j*2 + rdm.Next(0, 11); // Reset seconds
