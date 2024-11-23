@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -296,7 +297,7 @@ internal class Adjust
 			else if (cRow == lastRowNo)
 			{
 				var csrAbove = checkSelectedRows.Where(n => n.RowNo == cRow - 1).FirstOrDefault();
-					var diffAbove = csrAbove.Diff[cCol];
+				var diffAbove = csrAbove.Diff[cCol];
 				if (diffAbove <= 0)
 				{
 					for (int j = FilteredCount-1; j > Math.Abs(diff); j--)
@@ -317,17 +318,13 @@ internal class Adjust
 					else
 					{
 						var remDiff = Math.Abs(diff) - diffAbove;
-						int startIndex = FilteredCount - 1;
-						int endIndex = startIndex - remDiff;
-						for (int j = startIndex; j > endIndex; j--)
-						{
-							DeleteCell(rawsFiltedByTime[j]);
-						}
-						startIndex = startIndex - remDiff;
-						endIndex = startIndex - diffAbove;
-						for (int j = startIndex; j > endIndex; j--)
+						for (int j = 0; j < diffAbove; j++)
 						{
 							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
+						}
+						for (int j = diffAbove; j < Math.Abs(diff); j++)
+						{
+							DeleteCell(rawsFiltedByTime[j]);
 						}
 					}
 				}
@@ -335,99 +332,69 @@ internal class Adjust
 			else
 			{
 				var csrAbove = checkSelectedRows.Where(n => n.RowNo == cRow - 1).FirstOrDefault();
-				int remDiff = 0;
-				if (csrAbove.Diff[cCol] < 0)
+				var csrBelow = checkSelectedRows.Where(n => n.RowNo == cRow + 1).FirstOrDefault();
+				var diffAbove = csrAbove.Diff[cCol];
+				var diffBelow = csrBelow.Diff[cCol];
+				if (diffAbove <= 0)
 				{
-					for (int j = 0; j < Math.Abs(diff); j++)
+					for (int j = FilteredCount - 1; j > Math.Abs(diff); j--)
 					{
-						rawsFiltedByTime.RemoveAt(j);
+						DeleteCell(rawsFiltedByTime[j]);
 					}
 				}
 				else
 				{
-					var diffAbove = csrAbove.Diff[cCol];
 					if (diffAbove >= Math.Abs(diff))
 					{
-						for (int j = 0; j < Math.Abs(diff); j++)
+						int endIndex = Math.Abs(diff);
+						for (int j = 0; j < endIndex; j++)
 						{
-							var time = rawSheet.Cell(cRow, 20).GetString();
-
-							var first = Convert.ToInt32(time.Substring(0, 11));
-							var hr = Convert.ToInt32(time.Substring(11, 2));
-							var min = Convert.ToInt32(time.Substring(14, 2));
-							var sec = Convert.ToInt32(time.Substring(17, 2));
-							Time t = new Time(hr, min, sec);
-							t.Down(j);
-							string newtime = first + hr + ":" + min + ":" + sec + ".000";
-							rawSheet.Cell(cRow, 20).Value = newtime;
+							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
 						}
 					}
 					else
 					{
-						remDiff = Math.Abs(diff) - diffAbove;
-						for (int j = 0; j < diffAbove; j--)
+						var remDiff = Math.Abs(diff) - diffAbove;
+						for (int j = 0; j < diffAbove; j++)
 						{
-							var time = rawSheet.Cell(cRow, 20).GetString();
-							var first = Convert.ToInt32(time.Substring(0, 11));
-							var hr = Convert.ToInt32(time.Substring(11, 2));
-							var min = Convert.ToInt32(time.Substring(14, 2));
-							var sec = Convert.ToInt32(time.Substring(17, 2));
-							Time t = new Time(hr, min, sec);
-							t.Down(j);
-							string newtime = first + hr + ":" + min + ":" + sec + ".000";
-							rawSheet.Cell(cRow, 20).Value = newtime;
+							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
 						}
-					}
-				}
-
-
-
-				var csrBelow = checkSelectedRows.Where(n => n.RowNo == cRow + 1).FirstOrDefault();
-				if (remDiff < 0)
-				{
-					for (int j = 0; j < Math.Abs(diff); j++)
-					{
-						rawsFiltedByTime.RemoveAt(j);
-					}
-				}
-				else
-				{
-					var diffBelow = remDiff;
-					if (diffBelow >= Math.Abs(diff))
-					{
-						for (int j = Math.Abs(diff) - 1; j >= 0; j--)
+						diff = -remDiff;
+					
+						if (diffBelow <= 0)
 						{
-							var time = rawSheet.Cell(cRow, 20).GetString();
-
-							var first = Convert.ToString(time.Substring(0, 11));
-							var hr = Convert.ToInt32(time.Substring(11, 2));
-							var min = Convert.ToInt32(time.Substring(14, 2));
-							var sec = Convert.ToInt32(time.Substring(17, 2));
-							Time t = new Time(hr, min, sec);
-							t.Up(j);
-							string newtime = first + hr + ":" + min + ":" + sec + ".000";
-							rawSheet.Cell(cRow, 20).Value = newtime;
+							for (int j = 0; j < Math.Abs(diff); j++)
+							{
+								DeleteCell(rawsFiltedByTime[j]);
+							}
 						}
-					}
-					else
-					{
-						remDiff = Math.Abs(diff) - diffBelow;
-						for (int j = diffBelow - 1; j >= 0; j--)
+						else
 						{
-							var time = rawSheet.Cell(cRow, 20).GetString();
-
-							var first = Convert.ToString(time.Substring(0, 11));
-							var hr = Convert.ToInt32(time.Substring(11, 2));
-							var min = Convert.ToInt32(time.Substring(14, 2));
-							var sec = Convert.ToInt32(time.Substring(17, 2));
-							Time t = new Time(hr, min, sec);
-							t.Up(j);
-							string newtime = first + hr + ":" + min + ":" + sec + ".000";
-							rawSheet.Cell(cRow, 20).Value = newtime;
-						}
-						for (int j = 0; j < Math.Abs(remDiff); j++)
-						{
-							rawsFiltedByTime.RemoveAt(j);
+							if (diffBelow >= Math.Abs(diff))
+							{
+								int startIndex = FilteredCount - 1;
+								int endIndex = startIndex + diff;
+								for (int j = startIndex; j > endIndex; j--)
+								{
+									ModifyCell(rawsFiltedByTime[j], j, "UP");
+								}
+							}
+							else
+							{
+								var remDiff1 = Math.Abs(diff) - diffBelow;
+								int startIndex = FilteredCount - 1;
+								int endIndex = startIndex - remDiff1;
+								for (int j = startIndex; j > endIndex; j--)
+								{
+									DeleteCell(rawsFiltedByTime[j]);
+								}
+								startIndex = startIndex - remDiff1;
+								endIndex = startIndex - diffBelow;
+								for (int j = startIndex; j > endIndex; j--)
+								{
+									ModifyCell(rawsFiltedByTime[j], j, "UP");
+								}
+							}
 						}
 					}
 				}
@@ -527,7 +494,8 @@ internal class Adjust
 				Min = 59;
 				Hr = (Hr - 1) % 24;
 			}
-			Sec = 5+j*2; // Reset seconds
+			Random rdm = new Random();
+			Sec = 5+j*2 + rdm.Next(0, 11); // Reset seconds
 			return this;
 		}
 	}

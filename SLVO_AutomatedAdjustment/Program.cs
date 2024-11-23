@@ -15,7 +15,7 @@ public class Program()
 		//Console.WriteLine("Give me Raw Sheet Name");
 		//string rawSheetName=Console.ReadLine();
 
-		string excelPath = "C:\\Users\\1akhi\\OneDrive\\Desktop\\SL\\Down2.xlsm";
+		string excelPath = "C:\\Users\\1akhi\\OneDrive\\Desktop\\SL\\Mid333.xlsm";
 		string checkSheetName = "SL6-Setopul-Maitidevi-West_%Cov";
 		string rawSheetName = "SL6-Raw";
 		string Direction = "WEST";
