@@ -13,9 +13,14 @@ internal class Adjust
 	XLWorkbook workbook { get; set; }
 	IXLWorksheet checkSheet { get; set; }
 	IXLWorksheet rawSheet { get; set; }
+	string Path { get; set; }
 	List<RawSelectedRows> rawSelectedRows { get; set; } = new List<RawSelectedRows>();
-	Dictionary<int, List<RawSelectedRows>> rawDict{get;set;}
+	Dictionary<int, List<RawSelectedRows>> rawDict { get; set; }
 	Dictionary<int, string> vehTypeDict = new Dictionary<int, string>() { { 9, "Taxi" }, { 12, "Tempo" }, { 15, "UtilityPickUp" }, { 18, "MicroBus" }, { 21, "MiniBus" }, { 24, "BigBus" }, { 27, "LightTruck" }, { 30, "HeavyTruck" }, { 33, "MultiAxleTruck" } };
+	void SaveWorkBook()
+	{
+		this.workbook.SaveAs(this.Path);
+	}
 	List<RawSelectedRows> rawCarAndTaxi
 	{
 		get
@@ -160,17 +165,17 @@ internal class Adjust
 
 	public Adjust(string excelPath, string checkSheetName, string rawSheetName, string direction)
 	{
+		this.Path = excelPath;
 		workbook = new XLWorkbook(excelPath);
 		checkSheet = workbook.Worksheet(checkSheetName);
 		rawSheet = workbook.Worksheet(rawSheetName);
 		Direction = direction;
-		rawDict = new Dictionary<int, List<RawSelectedRows>>() { { 9, rawCarAndTaxi }, { 12, rawTempo }, { 15, rawUtilityPickUp }, { 18, rawMicroBus }, { 21, rawMiniBus }, { 24, rawBigBus }, { 27, rawLightTruck }, { 30, rawHeavyTruck }, { 33, rawMultiAxleTruck } };
 	}
 	public void checkSolve()
 	{
 		SaveToMemoryForProcess();
 		Check();
-
+		SaveWorkBook();
 	}
 
 	void SaveToMemoryForProcess()
@@ -188,7 +193,7 @@ internal class Adjust
 			CheckSelectedRows csr = new CheckSelectedRows();
 			csr.RowNo = row.RowNumber();
 			csr.ShortTime = row.Cell(3).GetString();
-			csr.Diff[9] = GetDiff(9,8,row);
+			csr.Diff[9] = GetDiff(9, 8, row);
 			csr.Diff[12] = GetDiff(12, 11, row);
 			csr.Diff[15] = GetDiff(15, 14, row);
 			csr.Diff[18] = GetDiff(18, 17, row);
@@ -213,7 +218,7 @@ internal class Adjust
 			}
 		}
 	}
-	int GetDiff(int t,int v, IXLRow row)
+	int GetDiff(int t, int v, IXLRow row)
 	{
 		int t1 = row.Cell(t).GetValue<int>();
 		int v1 = row.Cell(v).GetValue<int>();
@@ -228,74 +233,62 @@ internal class Adjust
 		else
 		{
 		}
-		return t - v;
+		return t1 - v1;
 	}
 	void Check()
 	{
+		rawDict = new Dictionary<int, List<RawSelectedRows>>() { { 9, rawCarAndTaxi }, { 12, rawTempo }, { 15, rawUtilityPickUp }, { 18, rawMicroBus }, { 21, rawMiniBus }, { 24, rawBigBus }, { 27, rawLightTruck }, { 30, rawHeavyTruck }, { 33, rawMultiAxleTruck } };
 		for (int i = 0; i < checkCells.Count; i++)
 		{
 			var cellToCheck = checkCells[i];
 			var cRow = cellToCheck.RowNo;
-			var cCol=cellToCheck.ColNo;
+			var cCol = cellToCheck.ColNo;
 
 			var csr = checkSelectedRows.Where(n => n.RowNo == cRow).FirstOrDefault();
 			var shortTime = csr.ShortTime;
-			int firstRowNo = 4;
-			int lastRowNo = 4+checkSelectedRows.Count();
+			int firstRowNo = 5;
+			int lastRowNo = firstRowNo + checkSelectedRows.Count() - 1;
 			int diff = csr.Diff[cCol];
 
+			var raws = rawDict[cCol];
+			var rawsFiltedByTime = raws.Where(n => n.ShortTime == shortTime).OrderBy(n => n.RowNo).ToList();
+			var FilteredCount = rawsFiltedByTime.Count();
 			if (cRow == firstRowNo)
 			{
-				var csrBelow = checkSelectedRows.Where(n => n.RowNo == cRow+1).FirstOrDefault();
-				if (csrBelow.Diff[cCol]<0)
+				var csrBelow = checkSelectedRows.Where(n => n.RowNo == cRow + 1).FirstOrDefault();
+					var diffBelow = csrBelow.Diff[cCol];
+				if (diffBelow <= 0)
 				{
-					for(int j = 0; j < Math.Abs(diff); j++)
+					for (int j = 0; j < Math.Abs(diff); j++)
 					{
-						var raws=rawDict[cCol];
-						var rawsFiltedByTime = raws.Where(n => n.ShortTime == shortTime).OrderBy(n=>n.RowNo).ToList();
-						rawsFiltedByTime.RemoveAt(j);
+						DeleteCell(rawsFiltedByTime[j]);
 					}
 				}
 				else
 				{
-					var diffBelow = csrBelow.Diff[cCol];
 					if (diffBelow >= Math.Abs(diff))
 					{
-						for (int j = Math.Abs(diff)-1; j >=0 ; j--)
+						int startIndex = FilteredCount - 1;
+						int endIndex = startIndex + diff;
+						for (int j = startIndex; j > endIndex; j--)
 						{
-							var time=rawSheet.Cell(cRow, 20).GetString();
-
-							var first = Convert.ToInt32(time.Substring(0, 11));
-							var hr = Convert.ToInt32(time.Substring(11, 2));
-							var min = Convert.ToInt32(time.Substring(14, 2));
-							var sec = Convert.ToInt32(time.Substring(17, 2));
-							Time t = new Time(hr, min, sec);
-							t.Up();
-							string newtime = first + hr + ":" + min + ":" + sec + ".000";
-							rawSheet.Cell(cRow, 20).Value=newtime;
+							ModifyCell(rawsFiltedByTime[j], j,"UP");
 						}
 					}
 					else
 					{
 						var remDiff = Math.Abs(diff) - diffBelow;
-						for (int j = diffBelow - 1; j >= 0; j--)
+						int startIndex = FilteredCount - 1;
+						int endIndex = startIndex -remDiff;
+						for (int j = startIndex; j > endIndex; j--)
 						{
-							var time = rawSheet.Cell(cRow, 20).GetString();
-
-							var first = Convert.ToInt32(time.Substring(0, 11));
-							var hr = Convert.ToInt32(time.Substring(11, 2));
-							var min = Convert.ToInt32(time.Substring(14, 2));
-							var sec = Convert.ToInt32(time.Substring(17, 2));
-							Time t = new Time(hr, min, sec);
-							t.Up();
-							string newtime = first + hr + ":" + min + ":" + sec + ".000";
-							rawSheet.Cell(cRow, 20).Value = newtime;
+							DeleteCell(rawsFiltedByTime[j]);
 						}
-						for (int j = 0; j < Math.Abs(remDiff); j++)
+						startIndex = startIndex - remDiff;
+						endIndex = startIndex -diffBelow;
+						for (int j = startIndex; j > endIndex; j--)
 						{
-							var raws = rawDict[cCol];
-							var rawsFiltedByTime = raws.Where(n => n.ShortTime == shortTime).OrderBy(n => n.RowNo).ToList();
-							rawsFiltedByTime.RemoveAt(j);
+							ModifyCell(rawsFiltedByTime[j], j, "UP");
 						}
 					}
 				}
@@ -303,68 +296,50 @@ internal class Adjust
 			else if (cRow == lastRowNo)
 			{
 				var csrAbove = checkSelectedRows.Where(n => n.RowNo == cRow - 1).FirstOrDefault();
-				if (csrAbove.Diff[cCol] < 0)
+					var diffAbove = csrAbove.Diff[cCol];
+				if (diffAbove <= 0)
 				{
-					for (int j = 0; j < Math.Abs(diff); j++)
+					for (int j = FilteredCount-1; j > Math.Abs(diff); j--)
 					{
-						var raws = rawDict[cCol];
-						var rawsFiltedByTime = raws.Where(n => n.ShortTime == shortTime).OrderBy(n => n.RowNo).ToList();
-						rawsFiltedByTime.RemoveAt(j);
+						DeleteCell(rawsFiltedByTime[j]);
 					}
 				}
 				else
 				{
-					var diffAbove = csrAbove.Diff[cCol];
 					if (diffAbove >= Math.Abs(diff))
 					{
-						for (int j = 0; j <Math.Abs(diff); j++)
+						int endIndex = Math.Abs(diff);
+						for (int j = 0; j < endIndex; j++)
 						{
-							var time = rawSheet.Cell(cRow, 20).GetString();
-
-							var first = Convert.ToInt32(time.Substring(0, 11));
-							var hr = Convert.ToInt32(time.Substring(11, 2));
-							var min = Convert.ToInt32(time.Substring(14, 2));
-							var sec = Convert.ToInt32(time.Substring(17, 2));
-							Time t = new Time(hr, min, sec);
-							t.Down();
-							string newtime = first + hr + ":" + min + ":" + sec + ".000";
-							rawSheet.Cell(cRow, 20).Value = newtime;
+							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
 						}
 					}
 					else
 					{
 						var remDiff = Math.Abs(diff) - diffAbove;
-						for (int j =0; j < diffAbove; j--)
+						int startIndex = FilteredCount - 1;
+						int endIndex = startIndex - remDiff;
+						for (int j = startIndex; j > endIndex; j--)
 						{
-							var time = rawSheet.Cell(cRow, 20).GetString();
-							var first = Convert.ToInt32(time.Substring(0, 11));
-							var hr = Convert.ToInt32(time.Substring(11, 2));
-							var min = Convert.ToInt32(time.Substring(14, 2));
-							var sec = Convert.ToInt32(time.Substring(17, 2));
-							Time t = new Time(hr, min, sec);
-							t.Down();
-							string newtime = first + hr + ":" + min + ":" + sec + ".000";
-							rawSheet.Cell(cRow, 20).Value = newtime;
+							DeleteCell(rawsFiltedByTime[j]);
 						}
-						for (int j = Math.Abs(remDiff)-1; j >=0 ; j--)
+						startIndex = startIndex - remDiff;
+						endIndex = startIndex - diffAbove;
+						for (int j = startIndex; j > endIndex; j--)
 						{
-							var raws = rawDict[cCol];
-							var rawsFiltedByTime = raws.Where(n => n.ShortTime == shortTime).OrderBy(n => n.RowNo).ToList();
-							rawsFiltedByTime.RemoveAt(j);
+							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
 						}
 					}
 				}
 			}
-			else 
+			else
 			{
 				var csrAbove = checkSelectedRows.Where(n => n.RowNo == cRow - 1).FirstOrDefault();
-				int remDiff=0;
+				int remDiff = 0;
 				if (csrAbove.Diff[cCol] < 0)
 				{
 					for (int j = 0; j < Math.Abs(diff); j++)
 					{
-						var raws = rawDict[cCol];
-						var rawsFiltedByTime = raws.Where(n => n.ShortTime == shortTime).OrderBy(n => n.RowNo).ToList();
 						rawsFiltedByTime.RemoveAt(j);
 					}
 				}
@@ -382,14 +357,14 @@ internal class Adjust
 							var min = Convert.ToInt32(time.Substring(14, 2));
 							var sec = Convert.ToInt32(time.Substring(17, 2));
 							Time t = new Time(hr, min, sec);
-							t.Down();
+							t.Down(j);
 							string newtime = first + hr + ":" + min + ":" + sec + ".000";
 							rawSheet.Cell(cRow, 20).Value = newtime;
 						}
 					}
 					else
 					{
-						 remDiff = Math.Abs(diff) - diffAbove;
+						remDiff = Math.Abs(diff) - diffAbove;
 						for (int j = 0; j < diffAbove; j--)
 						{
 							var time = rawSheet.Cell(cRow, 20).GetString();
@@ -398,22 +373,20 @@ internal class Adjust
 							var min = Convert.ToInt32(time.Substring(14, 2));
 							var sec = Convert.ToInt32(time.Substring(17, 2));
 							Time t = new Time(hr, min, sec);
-							t.Down();
+							t.Down(j);
 							string newtime = first + hr + ":" + min + ":" + sec + ".000";
 							rawSheet.Cell(cRow, 20).Value = newtime;
 						}
 					}
 				}
 
-				
+
 
 				var csrBelow = checkSelectedRows.Where(n => n.RowNo == cRow + 1).FirstOrDefault();
 				if (remDiff < 0)
 				{
 					for (int j = 0; j < Math.Abs(diff); j++)
 					{
-						var raws = rawDict[cCol];
-						var rawsFiltedByTime = raws.Where(n => n.ShortTime == shortTime).OrderBy(n => n.RowNo).ToList();
 						rawsFiltedByTime.RemoveAt(j);
 					}
 				}
@@ -426,36 +399,34 @@ internal class Adjust
 						{
 							var time = rawSheet.Cell(cRow, 20).GetString();
 
-							var first = Convert.ToInt32(time.Substring(0, 11));
+							var first = Convert.ToString(time.Substring(0, 11));
 							var hr = Convert.ToInt32(time.Substring(11, 2));
 							var min = Convert.ToInt32(time.Substring(14, 2));
 							var sec = Convert.ToInt32(time.Substring(17, 2));
 							Time t = new Time(hr, min, sec);
-							t.Up();
+							t.Up(j);
 							string newtime = first + hr + ":" + min + ":" + sec + ".000";
 							rawSheet.Cell(cRow, 20).Value = newtime;
 						}
 					}
 					else
 					{
-					 remDiff = Math.Abs(diff) - diffBelow;
+						remDiff = Math.Abs(diff) - diffBelow;
 						for (int j = diffBelow - 1; j >= 0; j--)
 						{
 							var time = rawSheet.Cell(cRow, 20).GetString();
 
-							var first = Convert.ToInt32(time.Substring(0, 11));
+							var first = Convert.ToString(time.Substring(0, 11));
 							var hr = Convert.ToInt32(time.Substring(11, 2));
 							var min = Convert.ToInt32(time.Substring(14, 2));
 							var sec = Convert.ToInt32(time.Substring(17, 2));
 							Time t = new Time(hr, min, sec);
-							t.Up();
+							t.Up(j);
 							string newtime = first + hr + ":" + min + ":" + sec + ".000";
 							rawSheet.Cell(cRow, 20).Value = newtime;
 						}
 						for (int j = 0; j < Math.Abs(remDiff); j++)
 						{
-							var raws = rawDict[cCol];
-							var rawsFiltedByTime = raws.Where(n => n.ShortTime == shortTime).OrderBy(n => n.RowNo).ToList();
 							rawsFiltedByTime.RemoveAt(j);
 						}
 					}
@@ -463,6 +434,34 @@ internal class Adjust
 			}
 
 		}
+	}
+	void DeleteCell(RawSelectedRows rsr)
+	{
+		int rowNo = rsr.RowNo;
+		for (int k = 1; k <= 25; k++)
+		{
+			rawSheet.Cell(rowNo, k).Clear();
+		}
+	}
+	void ModifyCell(RawSelectedRows rsr, int j, string Modify)
+	{
+		int rowNo = rsr.RowNo;
+		var time = rawSheet.Cell(rowNo, 20).GetString();
+		var first = Convert.ToString(time.Substring(0, 11));
+		var hr = Convert.ToInt32(time.Substring(11, 2));
+		var min = Convert.ToInt32(time.Substring(14, 2));
+		var sec = Convert.ToInt32(time.Substring(17, 2));
+		Time t = new Time(hr, min, sec);
+		if (Modify == "UP")
+		{
+		t.Up(j);
+		}
+		else if(Modify=="DOWN")
+		{
+			t.Down(j);
+		}
+		string newtime = first + t.Hr.ToString("D2") + ":" + t.Min.ToString("D2") + ":" + t.Sec.ToString("D2") + ".000";
+		rawSheet.Cell(rowNo, 20).Value = newtime;
 	}
 	class RawSelectedRows()
 	{
@@ -475,8 +474,8 @@ internal class Adjust
 	{
 		public int RowNo { get; set; }
 		public string ShortTime { get; set; }
-		public Dictionary<int,int> Diff { get; set; }
-	
+		public Dictionary<int, int> Diff { get; set; } = new Dictionary<int, int>();
+
 	}
 	class CheckCell
 	{
@@ -495,7 +494,7 @@ internal class Adjust
 			this.Sec = sec;
 		}
 
-		public Time Up()
+		public Time Up(int j)
 		{
 			int remainder = Min % 15;
 			if (remainder != 0)
@@ -509,12 +508,12 @@ internal class Adjust
 				Min = 0;
 				Hr = (Hr + 1) % 24; // Ensure Hr stays within 24-hour format
 			}
-
-			Sec = 5; // Reset seconds
+			Random rdm = new Random();
+			Sec = 5+j*2+ rdm.Next(0, 11); // Reset seconds
 			return this;
 		}
 
-		public Time Down()
+		public Time Down(int j)
 		{
 			// Convert minutes to the previous 15-minute multiple
 			int remainder = Min % 15;
@@ -523,8 +522,12 @@ internal class Adjust
 				Min -= remainder;
 				Min--;
 			}
-
-			Sec = 55; // Reset seconds
+			if (Min == 0)
+			{
+				Min = 59;
+				Hr = (Hr - 1) % 24;
+			}
+			Sec = 5+j*2; // Reset seconds
 			return this;
 		}
 	}
