@@ -15,7 +15,7 @@ public class Program()
 		//Console.WriteLine("Give me Raw Sheet Name");
 		//string rawSheetName=Console.ReadLine();
 
-		string excelPath = "C:\\Users\\1akhi\\OneDrive\\Desktop\\SL\\Manohora\\SL14-Manohara Pul-ThulodharaOriginal5.xlsx";
+		string excelPath = "C:\\Users\\akhilesh\\Desktop\\SLVOAdustment\\Manohora\\SL14-Manohara Pul-ThulodharaOriginal7.xlsx";
 		string checkSheetNameFirst = "SL14-Bridge Chyasal-South_%Cov";
 
 		string rawSheetName = "SL14-Raw";
@@ -24,7 +24,7 @@ public class Program()
 		string DirectionSecond = "NORTH";
 
 
-		Adjust ad = new Adjust(excelPath, rawSheetName,checkSheetNameFirst,DirectionFirst,checkSheetNameSecond,DirectionSecond);
+		Adjust ad = new Adjust(excelPath, rawSheetName, checkSheetNameFirst, DirectionFirst, checkSheetNameSecond, DirectionSecond);
 		ad.checkSolve();
 	}
 

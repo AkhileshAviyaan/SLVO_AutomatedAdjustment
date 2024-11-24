@@ -21,7 +21,7 @@ internal class Adjust
 	List<RawSelectedRows> rawSelectedRowsFirst { get; set; } = new List<RawSelectedRows>();
 	List<RawSelectedRows> rawSelectedRowsSecond { get; set; } = new List<RawSelectedRows>();
 	Dictionary<int, List<RawSelectedRows>> rawDict { get; set; }
-	Dictionary<int, string> vehTypeDict = new Dictionary<int, string>() { { 9, "Taxi" }, { 12, "Tempo" }, { 15, "UtilityPickUp" }, { 18, "MicroBus" }, { 21, "MiniBus" }, { 24, "BigBus" }, { 27, "LightTruck" }, { 30, "HeavyTruck" }, { 33, "MultiAxleTruck" } };
+	Dictionary<int, string> vehTypeDict = new Dictionary<int, string>() { { 9, "Car/Taxi" }, { 12, "Electric Tempo" }, { 15, "Utility Pick Up" }, { 18, "Micro Bus (Hiace Type)" }, { 21, "Minubus (Regular)" }, { 24, "Big Bus" }, { 27, "Light Truck" }, { 30, "Heavy Truck" }, { 33, "Multi-axel Truck" } };
 	void SaveWorkBook()
 	{
 		this.workbook.SaveAs(this.Path);
@@ -98,15 +98,15 @@ internal class Adjust
 			{
 				csr.ShortTime = row.Cell(3).GetString();
 				csr.IsFirstDirection = true;
-				csr.Diff[9] = GetDiff(9, 8, row, true);
-				csr.Diff[12] = GetDiff(12, 11, row, true);
-				csr.Diff[15] = GetDiff(15, 14, row, true);
-				csr.Diff[18] = GetDiff(18, 17, row, true);
-				csr.Diff[21] = GetDiff(21, 20, row, true);
-				csr.Diff[24] = GetDiff(24, 23, row, true);
-				csr.Diff[27] = GetDiff(27, 26, row, true);
-				csr.Diff[30] = GetDiff(30, 29, row, true);
-				csr.Diff[33] = GetDiff(33, 32, row, true);
+				UpdateCsr(csr, 9, 8, row, true);
+				UpdateCsr(csr, 12, 11, row, true);
+				UpdateCsr(csr, 15, 14, row, true);
+				UpdateCsr(csr, 18, 17, row, true);
+				UpdateCsr(csr, 21, 20, row, true);
+				UpdateCsr(csr, 24, 23, row, true);
+				UpdateCsr(csr, 27, 26, row, true);
+				UpdateCsr(csr, 30, 29, row, true);
+				UpdateCsr(csr, 33, 32, row, true);
 				checkSelectedRows.Add(csr);
 			}
 		}
@@ -118,15 +118,15 @@ internal class Adjust
 			{
 				csr.ShortTime = row.Cell(3).GetString();
 				csr.IsFirstDirection = false;
-				csr.Diff[9] = GetDiff(9, 8, row, false);
-				csr.Diff[12] = GetDiff(12, 11, row, false);
-				csr.Diff[15] = GetDiff(15, 14, row, false);
-				csr.Diff[18] = GetDiff(18, 17, row, false);
-				csr.Diff[21] = GetDiff(21, 20, row, false);
-				csr.Diff[24] = GetDiff(24, 23, row, false);
-				csr.Diff[27] = GetDiff(27, 26, row, false);
-				csr.Diff[30] = GetDiff(30, 29, row, false);
-				csr.Diff[33] = GetDiff(33, 32, row, false);
+				UpdateCsr(csr, 9, 8, row, false);
+				UpdateCsr(csr, 12, 11, row, false);
+				UpdateCsr(csr, 15, 14, row, false);
+				UpdateCsr(csr, 18, 17, row, false);
+				UpdateCsr(csr, 21, 20, row, false);
+				UpdateCsr(csr, 24, 23, row, false);
+				UpdateCsr(csr, 27, 26, row, false);
+				UpdateCsr(csr, 30, 29, row, false);
+				UpdateCsr(csr, 33, 32, row, false);
 				checkSelectedRows.Add(csr);
 			}
 		}
@@ -152,7 +152,7 @@ internal class Adjust
 			}
 		}
 	}
-	int GetDiff(int t, int v, IXLRow row, bool a)
+	void UpdateCsr(CheckSelectedRows csr, int t, int v, IXLRow row, bool a)
 	{
 		double t1 = row.Cell(t).GetDouble();
 		double v1 = row.Cell(v).GetDouble();
@@ -169,9 +169,31 @@ internal class Adjust
 			checkCells.Add(c);
 		}
 
-		return (int)diff;
+		csr.Diff[t] = (int)diff;
+		if (v1 == 0 & t1 != 0)
+		{
+			csr.ZeroCell.Add(t);
+		}
+		if (t1 != 0)
+		{
+			csr.Percentage[t] = (int)Math.Ceiling(v1 / t1 * 100);
+			csr.Increment[t] = (int)(100 / t1);
+		}
+		else
+		{
+			csr.Percentage[t] = 100;
+			csr.Increment[t] = 0;
+		}
 	}
-
+	List<RawSelectedRows> rawsFiltedByTime { get; set; }
+	List<RawSelectedRows> modifiedRaws { get; set; }
+	void Updateraw()
+	{
+		foreach (var r in modifiedRaws)
+		{
+			rawsFiltedByTime.Remove(r);
+		}
+	}
 	void Check(bool IsFirst)
 	{
 		if (IsFirst)
@@ -190,16 +212,62 @@ internal class Adjust
 			var cellToCheck = cells[i];
 			var cRow = cellToCheck.RowNo;
 			var cCol = cellToCheck.ColNo;
+			var cellOfOneRow = cells.Where(n => n.RowNo == cRow).ToList();
 
 			var csr = checkSelectedRows.Where(n => n.RowNo == cRow & n.IsFirstDirection == IsFirst).FirstOrDefault();
+
+
 			var shortTime = csr.ShortTime;
 			int firstRowNo = 5;
 			int lastRowNo = firstRowNo + 64 - 1;
 			int diff = csr.Diff[cCol];
-
+			int AbsDiff = Math.Abs(diff);
 			var raws = rawDict[cCol];
-			var rawsFiltedByTime = raws.Where(n => n.ShortTime == shortTime).OrderBy(n => n.RowNo).ToList();
+			rawsFiltedByTime = raws.Where(n => n.ShortTime == shortTime).OrderBy(n => n.RowNo).ToList();
 			var FilteredCount = rawsFiltedByTime.Count();
+
+			modifiedRaws = new List<RawSelectedRows>();
+
+			//logic to adust within cell
+
+
+			for (int j = csr.ZeroCell.Count() - 1; j >= 0; j--)
+			{
+				int a = csr.ZeroCell[j];
+				if (csr.Diff[a] == 0)
+				{
+					csr.ZeroCell.RemoveAt(j);
+				}
+			}
+			int withOutDataCount = csr.ZeroCell.Count();
+			int loopTo = 0;
+			if (AbsDiff == withOutDataCount)
+			{
+				loopTo = withOutDataCount;
+			}
+			else if (withOutDataCount > AbsDiff)
+			{
+				loopTo = AbsDiff;
+			}
+			else if (AbsDiff > withOutDataCount)
+			{
+				loopTo = withOutDataCount;
+			}
+			for (int j = loopTo - 1; j >= 0; j--)
+			{
+				int col = csr.ZeroCell[j];
+				ModifyCellVehicleTypeChanged(rawsFiltedByTime[j], j, col);
+				modifiedRaws.Add(rawsFiltedByTime[j]);
+				csr.ZeroCell.RemoveAt(j);
+				csr.Diff[cCol]++;
+				csr.Diff[col]--;
+			}
+			if (withOutDataCount >= AbsDiff)
+			{
+				continue;
+			}
+			diff = -(AbsDiff - loopTo);
+
 			if (FilteredCount == 0)
 			{
 				continue;
@@ -212,6 +280,7 @@ internal class Adjust
 				{
 					for (int j = 0; j < Math.Abs(diff); j++)
 					{
+						Updateraw();
 						DeleteCell(rawsFiltedByTime[j]);
 						csr.Diff[cCol]++;
 					}
@@ -224,7 +293,9 @@ internal class Adjust
 						int endIndex = startIndex + diff;
 						for (int j = startIndex; j > endIndex; j--)
 						{
-							ModifyCell(rawsFiltedByTime[j], j, "UP");
+							Updateraw();
+							ModifyCellTimeShift(rawsFiltedByTime[j], j, "UP");
+							modifiedRaws.Add(rawsFiltedByTime[j]);
 							csrBelow.Diff[cCol]--;
 							csr.Diff[cCol]++;
 						}
@@ -236,6 +307,7 @@ internal class Adjust
 						int endIndex = startIndex - remDiff;
 						for (int j = startIndex; j > endIndex; j--)
 						{
+							Updateraw();
 							DeleteCell(rawsFiltedByTime[j]);
 							csr.Diff[cCol]++;
 						}
@@ -243,7 +315,9 @@ internal class Adjust
 						endIndex = startIndex - diffBelow;
 						for (int j = startIndex; j > endIndex; j--)
 						{
-							ModifyCell(rawsFiltedByTime[j], j, "UP");
+							Updateraw();
+							ModifyCellTimeShift(rawsFiltedByTime[j], j, "UP");
+							modifiedRaws.Add(rawsFiltedByTime[j]);
 							csrBelow.Diff[cCol]--;
 							csr.Diff[cCol]++;
 						}
@@ -258,6 +332,7 @@ internal class Adjust
 				{
 					for (int j = FilteredCount - 1; j > Math.Abs(diff); j--)
 					{
+						Updateraw();
 						DeleteCell(rawsFiltedByTime[j]);
 						csr.Diff[cCol]++;
 					}
@@ -269,7 +344,9 @@ internal class Adjust
 						int endIndex = Math.Abs(diff);
 						for (int j = 0; j < endIndex; j++)
 						{
-							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
+							Updateraw();
+							ModifyCellTimeShift(rawsFiltedByTime[j], j, "DOWN");
+							modifiedRaws.Add(rawsFiltedByTime[j]);
 							csrAbove.Diff[cCol]--;
 							csr.Diff[cCol]++;
 						}
@@ -279,12 +356,15 @@ internal class Adjust
 						var remDiff = Math.Abs(diff) - diffAbove;
 						for (int j = 0; j < diffAbove; j++)
 						{
-							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
+							Updateraw();
+							ModifyCellTimeShift(rawsFiltedByTime[j], j, "DOWN");
+							modifiedRaws.Add(rawsFiltedByTime[j]);
 							csrAbove.Diff[cCol]--;
 							csr.Diff[cCol]++;
 						}
 						for (int j = diffAbove; j < Math.Abs(diff); j++)
 						{
+							Updateraw();
 							DeleteCell(rawsFiltedByTime[j]);
 							csr.Diff[cCol]++;
 						}
@@ -303,6 +383,7 @@ internal class Adjust
 					{
 						for (int j = 0; j < Math.Abs(diff); j++)
 						{
+							Updateraw();
 							DeleteCell(rawsFiltedByTime[j]);
 							csr.Diff[cCol]++;
 						}
@@ -311,6 +392,7 @@ internal class Adjust
 					{
 						for (int j = 0; j < Math.Abs(diff); j++)
 						{
+							Updateraw();
 							DeleteCell(rawsFiltedByTime[j]);
 							csr.Diff[cCol]++;
 						}
@@ -319,10 +401,12 @@ internal class Adjust
 					{
 						for (int j = 0; j < FilteredCount; j++)
 						{
+							Updateraw();
 							DeleteCell(rawsFiltedByTime[j]);
 							csr.Diff[cCol]++;
 						}
 					}
+					continue;
 				}
 				else
 				{
@@ -331,7 +415,9 @@ internal class Adjust
 						int endIndex = Math.Abs(diff);
 						for (int j = 0; j < endIndex; j++)
 						{
-							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
+							Updateraw();
+							ModifyCellTimeShift(rawsFiltedByTime[j], j, "DOWN");
+							modifiedRaws.Add(rawsFiltedByTime[j]);
 							csrAbove.Diff[cCol]--;
 							csr.Diff[cCol]++;
 						}
@@ -339,23 +425,20 @@ internal class Adjust
 					else
 					{
 						var remDiff = Math.Abs(diff) - diffAbove;
-						List<RawSelectedRows> modifiedRaws = new List<RawSelectedRows>();
 						for (int j = 0; j < diffAbove; j++)
 						{
-							ModifyCell(rawsFiltedByTime[j], j, "DOWN");
+							Updateraw();
+							ModifyCellTimeShift(rawsFiltedByTime[j], j, "DOWN");
 							modifiedRaws.Add(rawsFiltedByTime[j]);
 							csrAbove.Diff[cCol]--;
 							csr.Diff[cCol]++;
 						}
 						diff = -remDiff;
-						foreach (var r in modifiedRaws)
-						{
-							rawsFiltedByTime.Remove(r);
-						}
 						if (diffBelow <= 0)
 						{
 							for (int j = 0; j < Math.Abs(diff); j++)
 							{
+								Updateraw();
 								DeleteCell(rawsFiltedByTime[j]);
 								csr.Diff[cCol]++;
 							}
@@ -368,7 +451,9 @@ internal class Adjust
 								int endIndex = startIndex + diff;
 								for (int j = startIndex; j > endIndex; j--)
 								{
-									ModifyCell(rawsFiltedByTime[j], j, "UP");
+									Updateraw();
+									ModifyCellTimeShift(rawsFiltedByTime[j], j, "UP");
+									modifiedRaws.Add(rawsFiltedByTime[j]);
 									csrBelow.Diff[cCol]--;
 									csr.Diff[cCol]++;
 								}
@@ -376,14 +461,16 @@ internal class Adjust
 							else
 							{
 								var remDiff1 = Math.Abs(diff) - diffBelow;
-								int startIndex = FilteredCount - 1;
+								int startIndex = FilteredCount - 1 - modifiedRaws.Count();
 								int endIndex = startIndex - remDiff1;
 								if (endIndex < 0)
 								{
 									continue;
 								}
+
 								for (int j = startIndex; j > endIndex; j--)
 								{
+									Updateraw();
 									DeleteCell(rawsFiltedByTime[j]);
 									csr.Diff[cCol]++;
 								}
@@ -393,7 +480,8 @@ internal class Adjust
 								{
 									for (int j = startIndex; j > endIndex; j--)
 									{
-										ModifyCell(rawsFiltedByTime[j], j, "UP");
+										Updateraw();
+										ModifyCellTimeShift(rawsFiltedByTime[j], j, "UP");
 										csrBelow.Diff[cCol]--;
 										csr.Diff[cCol]++;
 									}
@@ -436,7 +524,7 @@ internal class Adjust
 		string b = hr2 + ":" + min2.ToString("D2") + ":00";
 		return b;
 	}
-	void ModifyCell(RawSelectedRows rsr, int j, string Modify)
+	void ModifyCellTimeShift(RawSelectedRows rsr, int j, string Modify)
 	{
 		int rowNo = rsr.RowNo;
 		var time = rawSheet.Cell(rowNo, 20).GetString();
@@ -456,6 +544,11 @@ internal class Adjust
 		string newtime = first + t.Hr.ToString("D2") + ":" + t.Min.ToString("D2") + ":" + t.Sec.ToString("D2") + ".000";
 		rawSheet.Cell(rowNo, 20).Value = newtime;
 	}
+	void ModifyCellVehicleTypeChanged(RawSelectedRows rsr, int j, int cell)
+	{
+		int rowNo = rsr.RowNo;
+		rawSheet.Cell(rowNo, 18).Value = vehTypeDict[cell];
+	}
 	class RawSelectedRows()
 	{
 		public int RowNo { get; set; }
@@ -468,8 +561,10 @@ internal class Adjust
 		public bool IsFirstDirection { get; set; }
 		public int RowNo { get; set; }
 		public string ShortTime { get; set; }
+		public List<int> ZeroCell { get; set; } = new List<int>();
 		public Dictionary<int, int> Diff { get; set; } = new Dictionary<int, int>();
-
+		public Dictionary<int, int> Percentage { get; set; } = new Dictionary<int, int>();
+		public Dictionary<int, int> Increment { get; set; } = new Dictionary<int, int>();
 	}
 	class CheckCell
 	{
