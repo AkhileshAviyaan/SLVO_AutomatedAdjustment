@@ -15,7 +15,7 @@ public class Program()
 		//Console.WriteLine("Give me Raw Sheet Name");
 		//string rawSheetName=Console.ReadLine();
 
-		string excelPath = "C:\\Users\\akhilesh\\Desktop\\SLVOAdustment\\Manohora\\SL14-Manohara Pul-ThulodharaOriginal7.xlsx";
+		string excelPath = "C:\\Users\\1akhi\\OneDrive\\Desktop\\SL\\Manohora\\SL14-Manohara Pul-ThulodharaOriginal1.xlsx";
 		string checkSheetNameFirst = "SL14-Bridge Chyasal-South_%Cov";
 
 		string rawSheetName = "SL14-Raw";

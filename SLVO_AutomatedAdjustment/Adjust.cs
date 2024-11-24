@@ -527,6 +527,7 @@ internal class Adjust
 	void ModifyCellTimeShift(RawSelectedRows rsr, int j, string Modify)
 	{
 		int rowNo = rsr.RowNo;
+		bool CanBeModify = false;
 		var time = rawSheet.Cell(rowNo, 20).GetString();
 		var first = Convert.ToString(time.Substring(0, 11));
 		var hr = Convert.ToInt32(time.Substring(11, 2));
@@ -535,14 +536,21 @@ internal class Adjust
 		Time t = new Time(hr, min, sec);
 		if (Modify == "UP")
 		{
-			t.Up(j);
+			CanBeModify=t.UpPossible(j);
 		}
 		else if (Modify == "DOWN")
 		{
-			t.Down(j);
+			CanBeModify = t.DownPossible(j);
 		}
+		if (CanBeModify)
+		{
 		string newtime = first + t.Hr.ToString("D2") + ":" + t.Min.ToString("D2") + ":" + t.Sec.ToString("D2") + ".000";
 		rawSheet.Cell(rowNo, 20).Value = newtime;
+		}
+		else
+		{
+			DeleteCell(rsr);
+		}
 	}
 	void ModifyCellVehicleTypeChanged(RawSelectedRows rsr, int j, int cell)
 	{
@@ -661,7 +669,70 @@ internal class Adjust
 			Sec = 5 + rdm.Next(0, 30); // Reset seconds
 			return this;
 		}
-	}
+		public bool UpPossible(int j)
+		{
+			int remainder = Min % 15;
+			if (remainder > 10)
+			{
+				if (Min >= 45 & Min < 60)
+				{
+					Min = 1;
+					Hr = Hr + 1;
+				}
+				else if (Min >= 30 & Min < 45)
+				{
+					Min = 46;
+				}
+				else if (Min >= 15 & Min < 30)
+				{
+					Min = 31;
+				}
+				else if (Min >= 0 & Min < 15)
+				{
+					Min = 16;
+				}
+				Random rdm = new Random();
+				Sec = 5 + rdm.Next(0, 30);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
+		public bool DownPossible(int j)
+		{
+			// Convert minutes to the previous 15-minute multiple
+			int remainder = Min % 15;
+			if (remainder < 5)
+			{
+				if (Min >= 45 & Min < 60)
+				{
+					Min = 44;
+				}
+				else if (Min >= 30 & Min < 45)
+				{
+					Min = 29;
+				}
+				else if (Min >= 15 & Min < 30)
+				{
+					Min = 14;
+				}
+				else if (Min >= 0 & Min < 15)
+				{
+					Min = 59;
+					Hr = (Hr - 1);
+				}
+				Random rdm = new Random();
+				Sec = 5 + rdm.Next(0, 30);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
 }
 
