@@ -27,7 +27,7 @@ namespace SLVO_AutomatedAdjustmentDesktop
 		List<string> WSLists { get; set; }
 		void LoadExcel_Click(object sender, EventArgs e)
 		{
-				var dlg = new OpenFileDialog() { Title = "Find Excel Path", Filter = $"Excel File|*{".xlsx"}" };
+				var dlg = new OpenFileDialog() { Title = "Find Excel Path", Filter = "Excel Files|*.xlsx;*.xlsm" };
 				if (dlg.ShowDialog() == DialogResult.OK)
 				{
 					ExcelPath = dlg.FileName;
@@ -87,21 +87,30 @@ namespace SLVO_AutomatedAdjustmentDesktop
 			Adjust ad = new Adjust(ExcelPath, rawSheetName, checkSheetNameFirst, DirectionFirst, checkSheetNameSecond, DirectionSecond);
 			result=ad.checkSolve();
 			}
+			else
+			{
+                MessageBox.Show("Check Path, sheet and direction, There is error", "Error Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
 			Cursor.Current = Cursors.Default;
 			if (result)
 			{
 				MessageBox.Show("Data Adjust in Excel file Successfully done", "Saving Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
-
 		}
 		bool UpdateParameters()
 		{
-			rawSheetName = comboRawDataSheet.SelectedItem.ToString();
+			ExcelPath = txtExcelPath.Text;
+            rawSheetName = comboRawDataSheet.SelectedItem.ToString();
 			checkSheetNameFirst = comboCheckSheetFirstDirection.SelectedItem.ToString();
 			checkSheetNameSecond = comboCheckSheetSecondDirection.SelectedItem.ToString();
 			DirectionFirst = comboFirstDirection.SelectedItem.ToString();
 			DirectionSecond = comboSecondDirection.SelectedItem.ToString();
-			if (rawSheetName == "-Select Sheet-" || checkSheetNameFirst == "-Select Sheet-" || checkSheetNameSecond == "-Select Sheet-")
+            if (ExcelPath == "")
+            {
+                MessageBox.Show("Excel file is not loaded", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            if (rawSheetName == "-Select Sheet-" || checkSheetNameFirst == "-Select Sheet-" || checkSheetNameSecond == "-Select Sheet-")
 			{
 				MessageBox.Show("Please select a valid Sheet from dropdown!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				return false;
